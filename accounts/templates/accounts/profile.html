@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'accounts/dashbord.css' %}">
+{% endblock %}
+{% block title %}{{ profile.user.username }}{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-4">
+
+                    <div class="side-menu">
+                        <div class="image-container">
+                            <img src="{{ profile.profile_image.url }}" style="width: 200px;height: 200px" alt="">
+                        </div>
+
+                        <a href="{% url 'accounts:profile' %}">Profile</a>
+                        <a href="{% url 'accounts:update' %}">Update</a>
+                        <a href="{% url 'accounts:change' %}">Change Password</a>
+                        <a href="{% url 'accounts:history' %}">History</a>
+                        <a href="{% url 'accounts:favourite' %}">Favourites</a>
+                    </div>
+            </div>
+            <div class="col-8">
+                <div class="profile">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">user : {{ profile.user.username }}</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">name : {{ profile.user.first_name }}</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">lastname : {{ profile.user.last_name }}</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">email : {{ profile.user.email }}</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">phone : {{ profile.phone }}</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">address : {{ profile.address }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+

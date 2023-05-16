@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}
+    update page
+{% endblock %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'accounts/dashbord.css' %}">
+{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-4">
+
+                <div class="side-menu">
+                    <div class="image-container">
+                        <img src="{{ profile_form.profile_image.url }}" style="width: 200px;height: 200px" alt="">
+                    </div>
+
+                    <a href="{% url 'accounts:profile' %}">Profile</a>
+                    <a href="{% url 'accounts:update' %}">Update</a>
+                    <a href="{% url 'accounts:change' %}">Change Password</a>
+                    <a href="{% url 'accounts:history' %}">History</a>
+                    <a href="{% url 'accounts:favourite' %}">Favourites</a>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="profile">
+                    <div class="card-body">
+                        <h1>welcome to uodate page</h1>
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ user_form.as_p }}
+                            {{ profile_form.as_p }}
+                            <button type="submit">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+

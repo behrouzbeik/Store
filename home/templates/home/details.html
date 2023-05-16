@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load jformat %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'home/css/test.css' %}">
+{% endblock %}
+{% block title %}
+
+    details page
+{% endblock %}
+{% block body %}
+
+    <link rel='stylesheet' href='https://sachinchoolur.github.io/lightslider/dist/css/lightslider.css'>
+    <div class="container-fluid mt-2 mb-3">
+        <div class="row no-gutters">
+            <div class="col-md-5 pr-2">
+                <div class="card">
+                    <div class="demo">
+                        <ul id="lightSlider">
+                            <li data-thumb="{{ product.image.url }}">
+                                <img src="{{ product.image.url }}"/>
+                            </li>
+
+                            {% for i in images %}
+                                <li data-thumb="{{ i.image.url }}">
+                                    <img src="{{ i.image.url }}"/>
+                                </li>
+                            {% endfor %}
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="card mt-2"><h6>Reviews</h6>
+                    <div class="d-flex flex-row">
+                        <div class="stars">
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <span class="ml-1 font-weight-bold">{{ product.average }}</span></div>
+                    <hr>
+                    <div class="badges">
+                        {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'home:product_Comment' product.id %}">
+                                {% csrf_token %}
+                                {#                                <div class="card">#}
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="comment-box">
+                                            <h4>Add Comment</h4>
+                                            <div class="rating">
+                                                <input type="radio" name="rate" value="5" id="5"><label
+                                                    for="5">&star;</label>
+                                                <input type="radio" name="rate" value="4" id="4"><label
+                                                    for="4">&star;</label>
+                                                <input type="radio" name="rate" value="3" id="3"><label
+                                                    for="3">&star;</label>
+                                                <input type="radio" name="rate" value="2" id="2"><label
+                                                    for="2">&star;</label>
+                                                <input type="radio" name="rate" value="1" id="1"><label
+                                                    for="1">&star;</label>
+                                            </div>
+                                            <div class="comment-box">
+                                        <textarea name="comment" class="form-control" rows="4"
+                                                  id="comment" required
+                                                  oninvalid="setCustomValidity('لطفا کامنت وارد نمایید')"></textarea>
+                                            </div>
+                                            <div class="text-center">
+                                                <button type="submit" class="btn btn-danger">Send Comment
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                {#                                </div>#}
+                            </form>
+                        {% endif %}
+                    </div>
+                    <hr>
+                    <div class="comment-section">
+                        {% for com in comment %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-row align-items-center">
+                                    <img src="{{ com.user.profile.profile_image.url }}"
+                                         class="rounded-circle profile-image" style="width: 70px;">
+                                    <div class="d-flex flex-column ml-1 comment-profile">
+                                        <div class="comment-ratings">
+                                            <i class="fa fa-star{% if com.rate < 1 %}-o empty {% endif %}"></i>
+                                            <i class="fa fa-star{% if com.rate < 2 %}-o empty {% endif %}"></i>
+                                            <i class="fa fa-star{% if com.rate < 3 %}-o empty {% endif %}"></i>
+                                            <i class="fa fa-star{% if com.rate < 4 %}-o empty {% endif %}"></i>
+                                            <i class="fa fa-star{% if com.rate < 5 %}-o empty {% endif %}"></i>
+                                        </div>
+                                        <span class="username">{{ com.user.username }}</span></div>
+                                </div>
+                                <div class="date"><span class="text-muted">{{ com.create }}</span></div>
+                            </div>
+                            <hr>
+                            <div class="row pl-2">
+                                <p>{{ com.comment }}</p>
+                            </div>
+                            <div class="row">
+                                <div class="p-2 m-2">
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'home:comment_like' com.id %}" class="like m-2 cursor">
+                                            <i class="fa fa-thumbs-o-up">likecomment
+                                                <span>like : </span>&nbsp &nbsp{{ com.total_comment_like }}
+                                            </i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <form method="post" action="{% url 'home:product_reply' product.id com.id %}">
+                                {% csrf_token %}
+                                <textarea name="comment" id="comment" placeholder="reply..." class="form-control"
+                                          rows="4" required
+                                          oninvalid="setCustomValidity('meghdar dahi konid')"></textarea>
+                                <div class="mt-2">
+                                    <button type="submit" class="btn btn-info">Send Reply</button>
+                                </div>
+
+                            </form>
+                            {% for data in com.comment_reply.all %}
+                                <p class="send mt-3 mb-3">Reply COmment : {{ data.comment }}</p>
+                            {% endfor %}
+                            <hr>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="card">
+
+                    <div class="about">
+                        <span class="font-weight-bold">{{ product.name }} </span>
+                        {% if product.status == 'Both' %}
+                            <form action="" method="post">
+                                {% csrf_token %}
+
+                                {% for data in size %}
+                                    <input type="radio" value="{{ data.id }}" {% if variants.id == data.id %}
+                                           checked{% endif %} name="select" onchange="this.form.submit();">
+                                    <a href="" style="text-decoration: none">{{ data.size_variant }}</a>
+                              {% endfor %}
+                            </form>
+                            <br>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                {% for data in colors %}
+                                    <input type="radio" value="{{ data.id }}" {% if variants.id == data.id %}
+                                           checked{% endif %} name="select" onchange="this.form.submit();">
+                                    <a href="" style="text-decoration: none">{{ data.color_variant }}</a>
+                                {% endfor %}
+                            </form>
+                            <br>
+
+
+
+
+                        {% elif product.status == 'Size' %}
+                            <form method="post">
+                                {% csrf_token %}
+                                {% for data in variant %}
+                                    <input type="radio" value="{{ data.id }}" {% if variants.id == data.id %}
+                                           checked{% endif %}
+                                           name="select" onchange="this.form.submit();">
+                                    <a href="" style="text-decoration: none">{{ data.size_variant }}</a>
+                                {% endfor %}
+                            </form><br>
+                        {% elif product.status == 'Color' %}
+                            <form method="post">
+                                {% csrf_token %}
+                                {% for data in variant %}
+                                    <input type="radio" value="{{ data.id }}" {% if variants.id == data.id %}
+                                           checked{% endif %}
+                                           name="select" onchange="this.form.submit()">
+                                    <a href="" style="text-decoration: none">{{ data.color_variant }}</a>
+                                {% endfor %}
+                            </form>
+                        {% endif %}
+                        <h4 class="font-weight-bold"> {{ variants.total_price }}</h4>
+
+
+                        <div class="cart">
+                            {% if product.status != 'None' %}
+{#                                <form method="post" action="{% url 'cart:add_cart' product.id %}">#}
+{#                                    {% csrf_token %}#}
+{#                                    <input type="hidden" name="select" value="{{ variants.id }}">#}
+{#                                    <input type="number" name="quantity" min="1" value="1" max="{{ variants.amount }}"#}
+{#                                           required>#}
+{#                                    <button type="submit">Add</button>#}
+{##}
+{##}
+{#                                </form>#}
+                                <form method="post" action="{% url 'cart:add' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="test" value="{{ variants.id }}">
+                                    <input type="number" name="quantity" value="1">
+                                    <button type="submit">Add</button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{% url 'cart:add_cart' product.id %}">
+                                    {% csrf_token %}
+                                    <input type="number" name="quantity" min="1" value="1" max="{{ product.amount }}"
+                                           required
+                                           oninvalid="setCustomValidity('تعداد حداکثر نباید بیشتر از {{ product.amount }}')">
+                                    <button type="submit" class="btn btn-outline-warning btn-long cart">اضافه کردن به
+                                        سبد خرید
+                                    </button>
+                                    <button class="btn btn-light wishlist"><i class="fa fa-heart"></i></button>
+                                </form>
+
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <hr>
+{#                <div class="buttons">#}
+{#                    <button class="btn btn-outline-warning btn-long cart">Add to Cart</button>#}
+{#                    <button class="btn btn-warning btn-long buy">Buy it Now</button>#}
+{#                    <button class="btn btn-light wishlist"><i class="fa fa-heart"></i></button>#}
+{#                </div>#}
+
+            <div class="card mt-2"><span>Similar items:</span>
+                <div class="similar-products mt-2 d-flex flex-row">
+                    {% for tag in similar %}
+                        <div class="card border p-1 text-center" style="width: 9rem;margin-right: 3px;">
+                            <a href="{% url 'home:detail' tag.id %}">
+                                <img
+                                        src="{{ tag.image.url }}" class="card-img-top" alt="..."
+                                        style="width: 110px;height: 110px;">
+                            </a>
+
+                            <div class="card-body"><h6 class="card-title">{{ tag.total_price }}</h6></div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mt-2"><span>Chart:</span>
+                <div class="similar-products mt-2 d-flex flex-row">
+                    <div class="row">
+                        <canvas id="myChart" width="600" height="300"></canvas>
+                    </div>
+                    {% block script %}
+                        {% if product.status != 'None' %}
+                            <script>
+                                const ctx = document.getElementById('myChart').getContext('2d');
+                                const myChart = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: [{%  for c in change %}{% if variants.id == c.variant_id %} '{{ i.update }}' {% endif %}, {% endfor %}],
+                                        datasets: [{
+                                            label: '# of Votes',
+                                            data: [{%  for c in change %}{% if variants.id == c.variant_id %} {{ i.unit_price }} {% endif %}, {% endfor %}],
+                                            backgroundColor: [
+                                                {% for i in change %} '{{ i.color }}' ,{% endfor %}
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            </script>
+                        {% else %}
+                            <script>
+                                const ctx = document.getElementById('myChart').getContext('2d');
+                                const myChart = new Chart(ctx, {
+                                    type: 'pie',
+                                    data: {
+                                        labels: [
+                                            {%  for i in update %} '{{ i.update|jformat:"%A %d %B %Y" }}',{% endfor %}],
+                                        datasets: [{
+                                            label: '# of Votes',
+                                            data: [{% for i in update %} {{ i.unit_price }} ,{% endfor %}],
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.8)',
+                                                'rgba(54, 162, 235, 0.8)',
+                                                'rgba(255, 206, 86, 0.8)',
+                                                'rgba(75, 192, 192, 0.8)',
+                                                'rgba(153, 102, 255, 0.8)',
+                                                'rgba(255, 159, 64, 0.8)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            </script>
+                        {% endif %}
+                    {% endblock %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js'></script>
+    <script src='https://sachinchoolur.github.io/lightslider/dist/js/lightslider.js'></script>
+    <script> $('#lightSlider').lightSlider({gallery: true, item: 1, loop: true, slideMargin: 0, thumbItem: 9});
+    </script>
+
+
+
+{% endblock %}
+

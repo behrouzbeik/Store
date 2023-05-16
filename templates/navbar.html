@@ -1,0 +1,35 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'nav.css' %}">
+<div class="nav">
+    <div class="container">
+        <ul>
+            <li><a href="{% url 'home:home' %}">Home</a></li>
+            <li><a href="{% url 'home:product' %}">Product</a></li>
+{#            <li><a href="{% url 'cart:' %}">Cart{{ nums }}</a></li>#}
+            <li>category
+                <ul>
+                    {% for cat in category %}
+                        <li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>
+                            <ul>
+                                {% for data in cat.sub.all %}
+                                    <li><a href="{{ data.get_absolute_url }}">{{ data.name }}</a>
+                                        <ul>
+                                            {% for i in data.sub.all %}
+                                            <li><a href="{{ i.get_absolute_url }}">{{ i.name }}</a></li>
+                                        {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+
+    <form class="form-inline float-sm-right" action="{% url 'home:product' %}">
+          <input class="form-control" type="search" placeholder="Search" name="search">
+            <input type="submit" value="search" class="btn btn-danger">
+    </form>
+    </div>
+</div>

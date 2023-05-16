@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+    {% for i in views %}
+        <p>{{ i.product.name }}</p>
+    {% endfor %}
+</div>
+{% endblock %}

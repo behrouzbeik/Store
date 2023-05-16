@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}
+    login page
+{% endblock %}
+{% block body %}
+    <h1>welcome to <login></login> page</h1>
+    <div class="container mt-5">
+         <form method="post">
+            {% csrf_token %}
+{#            <label for="uname">نام کاربری :</label><input type="text" name="user" placeholder="plz user...." id="uname"><br><br>#}
+{#            <input type="password" name="password" placeholder="plz password">#}
+{#            #}
+             {{ form.as_p }}
+            <br><br>
+            <button type="submit">Login</button>
+             <br><br>
+        </form>
+        <a href="{% url 'accounts:reset' %}">بازیابی رمز عبور</a>
+    </div>
+
+{% endblock %}

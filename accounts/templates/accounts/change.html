@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}
+    change page
+{% endblock %}
+{% block body %}
+    <h1>welcome to change page</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Change</button>
+    </form>
+
+{% endblock %}

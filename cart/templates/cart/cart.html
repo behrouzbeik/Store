@@ -1,0 +1,181 @@
+{#{% extends 'base.html' %}#}
+{#{% block body %}#}
+{#    <h1>CArt</h1>#}
+{#    <div class="container">#}
+{#       <div class="row">#}
+{#            <table class="table table-dark">#}
+{#            <thead>#}
+{#            <tr>#}
+{#                <th scope="col">#</th>#}
+{#                <th scope="col">image</th>#}
+{#                <th scope="col">product</th>#}
+{#                <th scope="col">size</th>#}
+{#                <th scope="col">color</th>#}
+{#                <th scope="col">price</th>#}
+{#                <th scope="col">quatity</th>#}
+{#                <th scope="col">total price</th>#}
+{#                <th scope="col">remove</th>#}
+{#            </tr>#}
+{#            </thead>#}
+{#            <tbody>#}
+{##}
+{#            {% for c in cart %}#}
+{#                <tr>#}
+{#                    <th scope="row">{{ forloop.counter }}</th>#}
+{#                    <td><img src="{{ c.product.image.url }}" style="width: 100px" alt=""></td>#}
+{#                    <td>{{ c.product.name }}</td>#}
+{#                    <td>{{ c.variant.size_variant.name }}</td>#}
+{#                    <td>{{ c.variant.color_variant.name }}</td>#}
+{#                    <td>#}
+{#                        {% if c.product.status != 'None' %}#}
+{#                            {{ c.variant.total_price }}#}
+{#                        {% else %}#}
+{#                            {{ c.product.total_price }}#}
+{#                        {% endif %}#}
+{#                    </td>#}
+{#                    <td>#}
+{#                        <a href="{% url 'cart:add_single' c.id %}"><i class="fa fa-plus"></i> </a>#}
+{#                        {{ c.quantity }}#}
+{#                         <a href="{% url 'cart:remove_single' c.id %}"><i class="fa fa-minus"></i> </a>#}
+{#                    </td>#}
+{#                    <td>#}
+{#                        {% if c.product.status != 'None' %}#}
+{#                            {% widthratio c.variant.total_price 1 c.quantity %}#}
+{#                        {% else %}#}
+{#                            {% widthratio c.product.total_price 1 c.quantity  %}#}
+{#                        {% endif %}#}
+{#                    </td>#}
+{##}
+{#                    <td>#}
+{#                        <a href="{% url 'cart:remove_cart' c.id %}"><i class="fa fa-trash" style="color: red"></i></a>#}
+{#                    </td>#}
+{#                </tr>#}
+{##}
+{##}
+{#            {% endfor %}#}
+{#            <tr>#}
+{#                <td colspan="7">total</td>#}
+{#                <td>{{ total }}</td>#}
+{#            </tr>#}
+{##}
+{#            </tbody>#}
+{#        </table>#}
+{#       </div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#        <div class="row">#}
+{#            <form method="post" action="{% url 'order:order_create' %}">#}
+{#                {% csrf_token %}#}
+{#               <div class="card" style="padding: 10px;background-color: black">#}
+{#                   <label for="">email :#}
+{#                        <input type="email" name="email" value="{{ user.email }}">#}
+{#                   </label>#}
+{#                    <label for="">fname :#}
+{#                        <input type="text" name="f_name" value="{{ user.first_name }}">#}
+{#                   </label>#}
+{#                    <label for="">lname :#}
+{#                        <input type="text" name="l_name" value="{{ user.last_name }}">#}
+{#                   </label>#}
+{#                    <label for="">adres :#}
+{#                        <input type="text" name="address" value="" required>#}
+{#                   </label>#}
+{#               </div>#}
+{#                <button type="submit" class="btn btn-outline-danger">order</button>#}
+{#            </form>#}
+{#        </div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#    </div>#}
+{#{% endblock %}#}
+
+{% extends 'base.html' %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-8">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">product</th>
+                        <th scope="col">id</th>
+                        <th scope="col">quantity</th>
+                        <th scope="col">price</th>
+                        <th scope="col">remove</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for c in cart %}
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>{{ c.variant.name }}</td>
+                            <td>{{ c.variant.id }}</td>
+                            <td>
+                                <i class="fa fa-angle-up" onclick="add('{{ c.variant.id }}')"></i>
+                                <input type="number" id="number{{ c.variant.id }}" value="{{ c.quantity }}" max="{{ c.variant.amount }}">
+                                <i class="fa fa-angle-down"></i>
+                            </td>
+                            <td>{{ c.variant.unit_price }}</td>
+                            <td><a href="{% url 'cart:remove' c.variant.id %}">remove</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-4">
+                <ul>
+                    <li>price: <span id="price"></span></li>
+                    <li>quantity: <span id="quantity"></span></li>
+                    <li>discount: <span id="discount"></span></li>
+                    <li>Total: <span id="total"></span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function show(){
+            $.ajax({
+                url : '{% url 'cart:show' %}',
+                type: 'GET',
+                success:function (response){
+                    $('#price').html(response.price);
+                    $('#quantity').html(response.quantity);
+                    $('#discount').html(response.discount);
+                    $('#total').html(response.total);
+
+                }
+            })
+        }
+
+        show()
+
+        function add(id){
+            const num = $('#number' + id).val();
+            const num2 = $('#number' + id).attr('max');
+            quantity = 0;
+            quantity += parseInt(num) + 1;
+            if(quantity <= num2){
+                $('#number' + id).val(quantity);
+                $.ajax({
+                    url : "{% url 'cart:add-single' %}",
+                    type : 'GET',
+                    data : {variant_id :id,quantity:quantity},
+                    success :function (data){
+                        {#alert('ok');#}
+                        show()
+                    }
+                })
+            }
+        }
+    </script>
+
+{% endblock %}
